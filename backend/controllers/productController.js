@@ -3,7 +3,7 @@ const { poolPromise, sql } = require('../config/db');
 exports.getAllProducts = async (req, res) => {
   try {
     const { search = '', sort = 'PRODUCTID', page = 1 } = req.query;
-    const offset = (page - 1) * 10; // Assuming 10 products per page
+    const offset = (page - 1) * 10; 
     const pool = await poolPromise;
 const result = await pool
       .request()

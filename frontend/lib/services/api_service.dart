@@ -22,7 +22,7 @@ class ApiService {
   }
 
   static Future<Product> fetchProductById(int id) async {
-    final response = await http.get(Uri.parse('$baseUrl/$id'));  // Changed here
+    final response = await http.get(Uri.parse('$baseUrl/$id')); 
     if (response.statusCode == 200) {
       return Product.fromJson(json.decode(response.body));
     } else {
@@ -43,7 +43,7 @@ class ApiService {
 
   static Future<void> updateProduct(int id, Product product) async {
     final response = await http.put(
-      Uri.parse('$baseUrl/$id'),   // Changed here
+      Uri.parse('$baseUrl/$id'),   
       headers: {'Content-Type': 'application/json'},
       body: json.encode(product.toJson()),
     );
@@ -53,7 +53,7 @@ class ApiService {
   }
 
   static Future<void> deleteProduct(int id) async {
-    final response = await http.delete(Uri.parse('$baseUrl/$id'));  // Changed here
+    final response = await http.delete(Uri.parse('$baseUrl/$id')); 
     if (response.statusCode != 200) {
       throw Exception('Failed to delete product');
     }
