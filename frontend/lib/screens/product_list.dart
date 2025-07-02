@@ -177,8 +177,8 @@ class _ProductListState extends State<ProductList> {
                                     TextButton(onPressed: () => Navigator.pop(context, false), child: const Text('Cancel')),
                                     ElevatedButton(
                                       onPressed: () => Navigator.pop(context, true),
-                                      child: const Text('Delete'),
-                                      style: ElevatedButton.styleFrom(backgroundColor: Colors.red),
+                                      child: const Text('Delete', style: TextStyle(color: Colors.white)),
+                                      style: ElevatedButton.styleFrom(backgroundColor: Colors.deepPurple),
                                     ),
                                   ],
                                 ),
