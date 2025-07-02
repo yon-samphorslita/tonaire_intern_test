@@ -27,7 +27,9 @@ class _ProductListState extends State<ProductList> {
     _fetchProducts();
 
     _scrollController.addListener(() {
-      if (_scrollController.position.pixels >= _scrollController.position.maxScrollExtent - 200 && !_isLoadingMore) {
+      if (_scrollController.position.pixels >=
+              _scrollController.position.maxScrollExtent - 200 &&
+          !_isLoadingMore) {
         _loadMore();
       }
     });
@@ -70,20 +72,26 @@ class _ProductListState extends State<ProductList> {
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Products'),
+        title: const Text('Product Manager'),
         foregroundColor: Colors.white,
-        backgroundColor: Colors.deepPurple,
+        backgroundColor: Colors.deepPurple.shade400,
         bottom: PreferredSize(
-          preferredSize: const Size.fromHeight(90),
+          preferredSize: const Size.fromHeight(100),
           child: Padding(
-            padding: const EdgeInsets.all(8.0),
+            padding: const EdgeInsets.fromLTRB(16, 0, 16, 12),
             child: Column(
               children: [
                 TextField(
-                  decoration: const InputDecoration(
+                  decoration: InputDecoration(
                     hintText: 'Search products...',
-                    prefixIcon: Icon(Icons.search),
-                    border: OutlineInputBorder(),
+                    prefixIcon: const Icon(Icons.search),
+                    filled: true,
+                    fillColor: Colors.white,
+                    contentPadding: const EdgeInsets.symmetric(horizontal: 16),
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(12),
+                      borderSide: BorderSide.none,
+                    ),
                   ),
                   onChanged: _onSearchChanged,
                 ),
@@ -91,9 +99,11 @@ class _ProductListState extends State<ProductList> {
                 Row(
                   mainAxisAlignment: MainAxisAlignment.end,
                   children: [
-                    const Text('Sort by: '),
+                    const Text('Sort by: ', style: TextStyle(color: Colors.white)),
                     DropdownButton<String>(
                       value: _sortBy,
+                      dropdownColor: Colors.white,
+                      borderRadius: BorderRadius.circular(8),
                       items: const [
                         DropdownMenuItem(value: 'PRODUCTID', child: Text('Default')),
                         DropdownMenuItem(value: 'PRICE', child: Text('Price')),
@@ -123,6 +133,7 @@ class _ProductListState extends State<ProductList> {
               },
               child: ListView.builder(
                 controller: _scrollController,
+                padding: const EdgeInsets.all(12),
                 itemCount: provider.products.length + (_isLoadingMore ? 1 : 0),
                 itemBuilder: (_, index) {
                   if (index == provider.products.length) {
@@ -131,53 +142,67 @@ class _ProductListState extends State<ProductList> {
                       child: Center(child: CircularProgressIndicator()),
                     );
                   }
+
                   final product = provider.products[index];
-                  return ListTile(
-                    title: Text(product.name),
-                    subtitle: Text('Price: \$${product.price} | Stock: ${product.stock}'),
-                    trailing: Row(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        IconButton(
-                          icon: const Icon(Icons.edit),
-                          onPressed: () => Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (_) => EditProduct(product: product),
+
+                  return Card(
+                    elevation: 4,
+                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                    margin: const EdgeInsets.only(bottom: 12),
+                    child: ListTile(
+                      contentPadding: const EdgeInsets.all(16),
+                      title: Text(product.name, style: const TextStyle(fontWeight: FontWeight.bold)),
+                      subtitle: Text('Price: \$${product.price.toStringAsFixed(2)} • Stock: ${product.stock}'),
+                      trailing: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          IconButton(
+                            icon: const Icon(Icons.edit, color: Colors.deepPurple),
+                            onPressed: () => Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (_) => EditProduct(product: product),
+                              ),
                             ),
                           ),
-                        ),
-                        IconButton(
-                          icon: const Icon(Icons.delete),
-                          onPressed: () async {
-                            final confirm = await showDialog<bool>(
-                              context: context,
-                              builder: (_) => AlertDialog(
-                                title: const Text('Confirm Delete'),
-                                content: const Text('Are you sure?'),
-                                actions: [
-                                  TextButton(onPressed: () => Navigator.pop(context, false), child: const Text('No')),
-                                  TextButton(onPressed: () => Navigator.pop(context, true), child: const Text('Yes')),
-                                ],
-                              ),
-                            );
-                            if (confirm ?? false) {
-                              await provider.deleteProduct(product.id!);
-                            }
-                          },
-                        ),
-                      ],
+                          IconButton(
+                            icon: const Icon(Icons.delete, color: Colors.deepPurple),
+                            onPressed: () async {
+                              final confirm = await showDialog<bool>(
+                                context: context,
+                                builder: (_) => AlertDialog(
+                                  title: const Text('Confirm Delete'),
+                                  content: const Text('Are you sure you want to delete this product?'),
+                                  actions: [
+                                    TextButton(onPressed: () => Navigator.pop(context, false), child: const Text('Cancel')),
+                                    ElevatedButton(
+                                      onPressed: () => Navigator.pop(context, true),
+                                      child: const Text('Delete'),
+                                      style: ElevatedButton.styleFrom(backgroundColor: Colors.red),
+                                    ),
+                                  ],
+                                ),
+                              );
+                              if (confirm ?? false) {
+                                await provider.deleteProduct(product.id!);
+                              }
+                            },
+                          ),
+                        ],
+                      ),
                     ),
                   );
                 },
               ),
             ),
-      floatingActionButton: FloatingActionButton(
+      floatingActionButton: FloatingActionButton.extended(
         onPressed: () => Navigator.push(
           context,
           MaterialPageRoute(builder: (_) => const AddProduct()),
         ),
-        child: const Icon(Icons.add),
+        label: const Text('Add', style: TextStyle(color: Colors.white)),
+        icon: const Icon(Icons.add, color: Colors.white),
+        backgroundColor: Colors.deepPurple,
       ),
     );
   }
